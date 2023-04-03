@@ -7,4 +7,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="Emgu.CV.World">
+      <HintPath>lib\Emgu.CV.World.dll</HintPath>
+    </Reference>
+    <Reference Include="KAutoHelper">
+      <HintPath>lib\KAutoHelper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
