@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KAutoHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace AutoLeoThap
 {
-    internal class AutoUtils
+    public class MyAutoControl : AutoControl
     {
+
     }
 }
