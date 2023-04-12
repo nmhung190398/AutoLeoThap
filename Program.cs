@@ -5,17 +5,20 @@ using KAutoHelper;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+class Program
+{
+    static void Main(string[] args)
+    {
+       
+        Console.WriteLine("Hello, World!");
 var hWnd = IntPtr.Zero;
 
-hWnd = AutoControl.FindWindowHandle(null, "HS s44");
+hWnd = AutoControl.FindWindowHandle(null, "XT s44");
 
-Console.WriteLine("Hello, World!");
 
 var vptCapturer = new VptCapturer(hWnd);
 
-vptCapturer.FullImage.Save("D:\\my-projects\\AutoLeoThap\\test.png");
 var sub = (Bitmap)Bitmap.FromFile("images\\dang-nhap-btn.png");
-sub.Save("D:\\my-projects\\AutoLeoThap\\test01.png");
 var btnDangNhap = ImageScanOpenCV.FindOutPoint(vptCapturer.FullImage, sub);
 
 
@@ -27,3 +30,7 @@ if (btnDangNhap != null)
 
 
 new Application(hWnd).run();
+
+    }
+}
+

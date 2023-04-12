@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Emgu.CV.Stitching;
 
 namespace AutoLeoThap
 {
@@ -12,6 +13,7 @@ namespace AutoLeoThap
     {
 
     }
+
 
     enum Location
     {
@@ -25,8 +27,17 @@ namespace AutoLeoThap
     {
         static Bitmap CLOSE_DAILY_TAB = (Bitmap)Bitmap.FromFile("images\\clone-daily-tab.png");
         static Bitmap NPC_BBT = (Bitmap)Bitmap.FromFile("images\\npc-bbt.png");
+        static Bitmap MAP_BBT = (Bitmap)Bitmap.FromFile("images\\bbt.png");
+        static Bitmap MAP_AMT = (Bitmap)Bitmap.FromFile("images\\amt.png");
+        static Bitmap VAO_AMT = (Bitmap)Bitmap.FromFile("images\\vao-amt.png");
+        static Bitmap OUT_AMT = (Bitmap)Bitmap.FromFile("images\\out-amt.png");
+        static Bitmap BOSS_AMT = (Bitmap)Bitmap.FromFile("images\\boss-amt.png");
+        static Bitmap DAME_BOSS = (Bitmap)Bitmap.FromFile("images\\dame.png");
+        static Bitmap BOSS_DIA_AMT = (Bitmap)Bitmap.FromFile("images\\dia-sat-ma-anh.png");
+        static Bitmap BOSS_HOA_AMT = (Bitmap)Bitmap.FromFile("images\\hoa-da-anh-ma.png");
+        static Bitmap BOSS_PHONG_AMT = (Bitmap)Bitmap.FromFile("images\\vao-amt.png");
 
-        static Point NPC_ACTION_01 = new Point(548, 523);
+        static Point NPC_ACTION_01 = new Point(253, 336);
         static Point NPC_ACTION_02 = new Point(548, 574);
     }
 
@@ -53,7 +64,23 @@ namespace AutoLeoThap
 
         Location getLocation()
         {
-            return Location.NONE;
+            var main = VptCapturer.FullImage;
+            var checkLocationBBT = ImageScanOpenCV.FindOutPoint(main, Data.MAP_BBT);
+            var checkLocationAMT = ImageScanOpenCV.FindOutPoint(main, Data.MAP_AMT);
+            if (checkLocationBBT != null)
+            {
+                return Location.BBT;
+            }
+            else if(checkLocationAMT != null)
+            {
+                return Location.AMT;
+            }
+            else
+            {
+                return Location.NONE;
+            }
+            
+           
         }
 
 
@@ -64,6 +91,13 @@ namespace AutoLeoThap
 
         bool bossExist()
         {
+            if (searchImage(Data.BOSS_HOA_AMT) )
+            {
+                return false;
+            } else if(searchImage(Data.BOSS_DIA_AMT))
+            {
+                return false;
+            }
             return true;
         }
 
@@ -78,10 +112,10 @@ namespace AutoLeoThap
                 reloadVptCapturer();
             }
             var point = ImageScanOpenCV.FindOutPoint(main, sub);
-
-            if (click)
+    
+            if (click && point != null)
             {
-                AutoControl.SendClickOnPosition(IntPtr, point.Value.X + sub.Width / 2, point.Value.Y + sub.Height / 2);
+                AutoControl.SendClickOnPosition(IntPtr, point.Value.X + sub.Width / 2, point.Value.Y - sub.Height / 2);
             }
 
             return point != null;
@@ -90,7 +124,7 @@ namespace AutoLeoThap
         public void run()
         {
 
-            while (false)
+            while (true)
             {
                 reloadVptCapturer();
                 var location = getLocation();
@@ -98,16 +132,16 @@ namespace AutoLeoThap
                 {
                     //1.close daily tab
                     searchImage(Data.CLOSE_DAILY_TAB, click: true);
-
-
-
                     //2.search and click npc
                     //3. vào ảo ma tháp
                     var loopRp = loop(() =>
                     {
-                        if(searchImage(Data.CLOSE_DAILY_TAB, click: true))
+                        
+                        searchImage(Data.NPC_BBT, click: true);
+                        Thread.Sleep(200);
+                        if(searchImage(Data.VAO_AMT, click: true))
                         {
-                            Thread.Sleep(100);
+                            Thread.Sleep(200);
                             AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X , Data.NPC_ACTION_01.Y);
                             return false;
                         }
@@ -122,19 +156,20 @@ namespace AutoLeoThap
                 else if (location == Location.AMT)
                 {
                     //1.click oki
+                    AutoControl.SendClickOnPosition(IntPtr, 529 , 381);
                     if (!bossExist())
                     {
                         //lên tầng
                         var loopRp = loop(() =>
                         {
                             // click npc ô chát
-                            AutoControl.SendClickOnPosition(IntPtr, 0, 0);
+                            AutoControl.SendClickOnPosition(IntPtr, 244, 558);
                             reloadVptCapturer();
                             // kiểm tra xem tab npc action đã open chưa
-                            if (searchImage(null))
+                            if (searchImage(Data.OUT_AMT , click:true))
                             {
                                 // click lên tầng
-                                AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
+                                // AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
                                 return false;
                             }
                             
@@ -148,11 +183,11 @@ namespace AutoLeoThap
                         var loopRp = loop(() =>
                         {
                             // click bosss
-                            if (searchImage(Data.CLOSE_DAILY_TAB, click: true))
+                            if (searchImage(Data.BOSS_AMT, click: true))
                             {
                                 Thread.Sleep(100);
                                 // kiểm tra xem tab npc action đã open chưa
-                                if (searchImage(null))
+                                if (searchImage(Data.DAME_BOSS, click: true))
                                 {
                                     // click tân công
                                     AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
@@ -169,10 +204,10 @@ namespace AutoLeoThap
                         var loopRp = loop(() =>
                         {
                             // click npc ô chát
-                            AutoControl.SendClickOnPosition(IntPtr, 0, 0);
+                            AutoControl.SendClickOnPosition(IntPtr, 244, 558);
                             reloadVptCapturer();
                             // kiểm tra xem tab npc action đã open chưa
-                            if (searchImage(null))
+                            if (searchImage(Data.OUT_AMT , click:true))
                             {
                                 // click rời ảo ma tháp
                                 AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);

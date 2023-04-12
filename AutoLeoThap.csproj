@@ -25,9 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="images\dang-nhap-btn.png">
+    <None Update="images\*.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
