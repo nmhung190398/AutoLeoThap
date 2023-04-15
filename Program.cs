@@ -13,7 +13,7 @@ class Program
         Console.WriteLine("Hello, World!");
 var hWnd = IntPtr.Zero;
 
-hWnd = AutoControl.FindWindowHandle(null, "XT s44");
+hWnd = AutoControl.FindWindowHandle(null, "TM s44");
 
 
 var vptCapturer = new VptCapturer(hWnd);

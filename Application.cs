@@ -27,11 +27,15 @@ namespace AutoLeoThap
     {
         static Bitmap CLOSE_DAILY_TAB = (Bitmap)Bitmap.FromFile("images\\clone-daily-tab.png");
         static Bitmap NPC_BBT = (Bitmap)Bitmap.FromFile("images\\npc-bbt.png");
+        static Bitmap NPC_BBT2 = (Bitmap)Bitmap.FromFile("images\\npc-bbt2.png");
         static Bitmap MAP_BBT = (Bitmap)Bitmap.FromFile("images\\bbt.png");
         static Bitmap MAP_AMT = (Bitmap)Bitmap.FromFile("images\\amt.png");
+        static Bitmap MAP_AMT_2 = (Bitmap)Bitmap.FromFile("images\\amt2.png");
         static Bitmap VAO_AMT = (Bitmap)Bitmap.FromFile("images\\vao-amt.png");
         static Bitmap OUT_AMT = (Bitmap)Bitmap.FromFile("images\\out-amt.png");
         static Bitmap BOSS_AMT = (Bitmap)Bitmap.FromFile("images\\boss-amt.png");
+        static Bitmap BOSS_AMT_2 = (Bitmap)Bitmap.FromFile("images\\boss-amt-2.png");
+        static Bitmap BOSS_AMT_3 = (Bitmap)Bitmap.FromFile("images\\boss-amt-3.png");
         static Bitmap DAME_BOSS = (Bitmap)Bitmap.FromFile("images\\dame.png");
         static Bitmap BOSS_DIA_AMT = (Bitmap)Bitmap.FromFile("images\\dia-sat-ma-anh.png");
         static Bitmap BOSS_HOA_AMT = (Bitmap)Bitmap.FromFile("images\\hoa-da-anh-ma.png");
@@ -65,13 +69,11 @@ namespace AutoLeoThap
         Location getLocation()
         {
             var main = VptCapturer.FullImage;
-            var checkLocationBBT = ImageScanOpenCV.FindOutPoint(main, Data.MAP_BBT);
-            var checkLocationAMT = ImageScanOpenCV.FindOutPoint(main, Data.MAP_AMT);
-            if (checkLocationBBT != null)
+            if (ImageScanOpenCV.FindOutPoint(main, Data.MAP_BBT) != null)
             {
                 return Location.BBT;
             }
-            else if(checkLocationAMT != null)
+            else if(ImageScanOpenCV.FindOutPoint(main, Data.MAP_AMT) != null || ImageScanOpenCV.FindOutPoint(main, Data.MAP_AMT_2) != null)
             {
                 return Location.AMT;
             }
@@ -136,12 +138,14 @@ namespace AutoLeoThap
                     //3. vào ảo ma tháp
                     var loopRp = loop(() =>
                     {
+                        reloadVptCapturer();
                         
-                        searchImage(Data.NPC_BBT, click: true);
-                        Thread.Sleep(200);
-                        if(searchImage(Data.VAO_AMT, click: true))
+                        Thread.Sleep(1000);
+                        if(searchImage(Data.NPC_BBT, click: true) || searchImage(Data.NPC_BBT2, click: true))
                         {
-                            Thread.Sleep(200);
+                            Thread.Sleep(1000);
+                            AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X , Data.NPC_ACTION_01.Y);
+                            Thread.Sleep(1000);
                             AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X , Data.NPC_ACTION_01.Y);
                             return false;
                         }
@@ -155,74 +159,96 @@ namespace AutoLeoThap
                 }
                 else if (location == Location.AMT)
                 {
+                    reloadVptCapturer();
                     //1.click oki
                     AutoControl.SendClickOnPosition(IntPtr, 529 , 381);
-                    if (!bossExist())
+                    if( searchImage(Data.BOSS_AMT) || searchImage(Data.BOSS_AMT_2) || searchImage(Data.BOSS_AMT_3))
                     {
-                        //lên tầng
-                        var loopRp = loop(() =>
+                        
+                        if (!bossExist())
                         {
-                            // click npc ô chát
-                            AutoControl.SendClickOnPosition(IntPtr, 244, 558);
-                            reloadVptCapturer();
-                            // kiểm tra xem tab npc action đã open chưa
-                            if (searchImage(Data.OUT_AMT , click:true))
+                            //lên tầng
+                            var loopRp = loop(() =>
                             {
-                                // click lên tầng
-                                // AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
-                                return false;
-                            }
-                            
-                            return true;
-                        });
-                    }
-                    else if (canAttack())
-                    {
-                        // click boss
-                        // attack
-                        var loopRp = loop(() =>
-                        {
-                            // click bosss
-                            if (searchImage(Data.BOSS_AMT, click: true))
-                            {
-                                Thread.Sleep(100);
+                                // click npc ô chát
+                                AutoControl.SendClickOnPosition(IntPtr, 244, 558);
+                                reloadVptCapturer();
                                 // kiểm tra xem tab npc action đã open chưa
-                                if (searchImage(Data.DAME_BOSS, click: true))
+                                if (searchImage(Data.OUT_AMT , click:true))
                                 {
-                                    // click tân công
-                                    AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
+                                    var loopRp = loop(() =>
+                                    {
+                                        // click npc ô chát
+                                        AutoControl.SendClickOnPosition(IntPtr, 244, 558);
+                                        reloadVptCapturer();
+                                        // kiểm tra xem tab npc action đã open chưa
+                                        if (searchImage(Data.MAP_BBT))
+                                        {
+                                            // click lên tầng
+                                            AutoControl.SendClickOnPosition(IntPtr, 876, 23);
+                                            Thread.Sleep(500);
+                                            AutoControl.SendClickOnPosition(IntPtr, 521, 341);
+                                            Thread.Sleep(500);
+                                            AutoControl.SendClickOnPosition(IntPtr, 532, 373);
+                                            
+                                            return false;
+                                        }
+                            
+                                        return true;
+                                    });
                                     return false;
                                 }
-                            }
-                            return true;
-                        });
-
+                            
+                                return true;
+                            });
+                        }
+                        else if (canAttack())
+                        {
+                            // click boss
+                            // attack
+                            var loopRp = loop(() =>
+                            {
+                                // click bosss
+                                if (searchImage(Data.BOSS_AMT, click: true) || searchImage(Data.BOSS_AMT_2, click: true) || searchImage(Data.BOSS_AMT_3, click: true))
+                                {
+                                    Thread.Sleep(1000);
+                                    // kiểm tra xem tab npc action đã open chưa
+                                    if (searchImage(Data.DAME_BOSS, click: true))
+                                    {
+                                        // click tân công
+                                        AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
+                                        
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            });
+                    
+                        }
                     }
-                    else
+                    else // lên tầng
                     {
-                        //lên tầng
                         var loopRp = loop(() =>
                         {
                             // click npc ô chát
                             AutoControl.SendClickOnPosition(IntPtr, 244, 558);
                             reloadVptCapturer();
                             // kiểm tra xem tab npc action đã open chưa
-                            if (searchImage(Data.OUT_AMT , click:true))
+                            if (searchImage(Data.OUT_AMT))
                             {
                                 // click rời ảo ma tháp
                                 AutoControl.SendClickOnPosition(IntPtr, Data.NPC_ACTION_01.X, Data.NPC_ACTION_01.Y);
                                 return false;
                             }
-
+                    
                             return true;
                         });
-
+                    
                         if (loopRp)
                         {
                             // đổi kênh
                         }
                     }
-
                 }
                 else if (location == Location.IN_GAME)
                 {
@@ -232,7 +258,7 @@ namespace AutoLeoThap
                 {
 
                 }
-                Thread.Sleep(200);
+                Thread.Sleep(1000);
             }
         }
 
@@ -246,7 +272,7 @@ namespace AutoLeoThap
                 {
                     return true;
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
             }
 
             return false;
