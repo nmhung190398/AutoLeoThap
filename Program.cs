@@ -9,28 +9,24 @@ class Program
 {
     static void Main(string[] args)
     {
-       
         Console.WriteLine("Hello, World!");
-var hWnd = IntPtr.Zero;
+        var hWnd = IntPtr.Zero;
 
-hWnd = AutoControl.FindWindowHandle(null, "TM s44");
-
-
-var vptCapturer = new VptCapturer(hWnd);
-
-var sub = (Bitmap)Bitmap.FromFile("images\\dang-nhap-btn.png");
-var btnDangNhap = ImageScanOpenCV.FindOutPoint(vptCapturer.FullImage, sub);
+        hWnd = AutoControl.FindWindowHandle(null, "tai");
 
 
+        var vptCapturer = new VptCapturer(hWnd);
 
-if (btnDangNhap != null)
-{
-    AutoControl.SendClickOnPosition(hWnd, btnDangNhap.Value.X + 30, btnDangNhap.Value.Y + 20);
-}
+        var sub = (Bitmap)Bitmap.FromFile("images\\dang-nhap-btn.png");
+        var btnDangNhap = ImageScanOpenCV.FindOutPoint(vptCapturer.FullImage, sub);
 
 
-new Application(hWnd).run();
+        if (btnDangNhap != null)
+        {
+            AutoControl.SendClickOnPosition(hWnd, btnDangNhap.Value.X + 30, btnDangNhap.Value.Y + 20);
+        }
 
+
+        new AutoOc(hWnd).run();
     }
 }
-
