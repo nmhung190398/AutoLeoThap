@@ -78,11 +78,11 @@ public class AutoOc
                 {
                     // click npc ô chát
                     AutoControl.SendClickOnPosition(IntPtr, 980, 649);
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     reloadVptCapturer();
                     if (searchImage(Data.CANCEL_Q, click: true))
                     {
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         AutoControl.SendClickOnPosition(IntPtr, 493, 373);
                         return false;
                     }
@@ -96,11 +96,11 @@ public class AutoOc
                 {
                     // click npc ô chát
                     AutoControl.SendClickOnPosition(IntPtr, 147, 557);
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     reloadVptCapturer();
                     if (searchImage(Data.CAN_NHAN_Q, click: true))
                     {
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         AutoControl.SendClickOnPosition(IntPtr, 525, 651);
                         return false;
                     }

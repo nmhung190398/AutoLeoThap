@@ -4,6 +4,7 @@ using AutoLeoThap;
 using KAutoHelper;
 using System.Drawing;
 using System.Drawing.Imaging;
+using SearchPassWord;
 
 class Program
 {
@@ -12,7 +13,7 @@ class Program
         Console.WriteLine("Hello, World!");
         var hWnd = IntPtr.Zero;
 
-        hWnd = AutoControl.FindWindowHandle(null, "tai");
+        hWnd = AutoControl.FindWindowHandle(null, "hug");
 
 
         var vptCapturer = new VptCapturer(hWnd);
@@ -27,6 +28,6 @@ class Program
         }
 
 
-        new AutoOc(hWnd).run();
+        new SearchPass(hWnd).run();
     }
 }
